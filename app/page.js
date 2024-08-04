@@ -11,6 +11,7 @@ export default function Home() {
   const [owners, setOwners] = useState([]);
   const [open, setOpen] = useState(false);
   const [ownerModalOpen, setOwnerModalOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false); // State for image modal
   const [itemName, setItemName] = useState('');
   const [ownerNames, setOwnerNames] = useState([]);
   const [price, setPrice] = useState('');
@@ -19,6 +20,7 @@ export default function Home() {
   const [newOwner, setNewOwner] = useState('');
   const [selectedOwner, setSelectedOwner] = useState(''); // State for the selected owner
   const [filteredInventory, setFilteredInventory] = useState([]); // State for the filtered inventory
+  const [selectedImage, setSelectedImage] = useState(''); // State for the selected image URL
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -217,6 +219,7 @@ export default function Home() {
   const handleClose = () => setOpen(false);
   const handleOwnerModalOpen = () => setOwnerModalOpen(true);
   const handleOwnerModalClose = () => setOwnerModalOpen(false);
+  const handleImageModalClose = () => setImageModalOpen(false); // Handle image modal close
 
   const theme = createTheme({
     palette: {
@@ -282,7 +285,7 @@ export default function Home() {
         </Box>
         <Box
           width={isMobile ? "100%" : "800px"}
-          marginTop={isMobile ? "270px" : "250px"}  // Adjust this margin to ensure the content is not hidden
+          marginTop={isMobile ? "275px" : "250px"}  // Adjust this margin to ensure the content is not hidden
           overflow="auto"
           height={isMobile ? "calc(100vh - 200px)" : "calc(100vh - 250px)"}
         >
@@ -301,7 +304,7 @@ export default function Home() {
                   </Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="flex-end" flex="1" marginLeft={isMobile ? 2 : 0}>
-                  {imageUrl && <img src={imageUrl} alt={name} style={{ width: isMobile ? '150px' : '350px', height: isMobile ? '100px' : '250px', objectFit: 'cover' }} />}
+                  {imageUrl && <img src={imageUrl} alt={name} style={{ width: isMobile ? '150px' : '350px', height: isMobile ? '100px' : '250px', objectFit: 'cover', marginRight: '15px', cursor: 'pointer' }} onClick={() => { setSelectedImage(imageUrl); setImageModalOpen(true); }} />} {/* Added onClick */}
                 </Box>
                 <Box display="flex" gap={1} flex="1" justifyContent="flex-end">
                   <Button variant="outlined" onClick={() => editItemDetails({ name, displayName, owners, price, imageUrl })}>Edit</Button>
@@ -310,6 +313,11 @@ export default function Home() {
             ))}
           </Stack>
         </Box>
+        <Modal open={imageModalOpen} onClose={handleImageModalClose}>
+          <Box position="absolute" top="50%" left="50%" width={isMobile ? "90%" : "auto"} bgcolor="background.paper" border="2px solid #000" boxShadow={24} sx={{ transform: "translate(-50%,-50%)" }}>
+            <img src={selectedImage} alt="Selected" style={{ width: "100%", height: "auto" }} />
+          </Box>
+        </Modal>
         <Modal open={open} onClose={handleClose}>
           <Box position="absolute" top="50%" left="50%" width={isMobile ? "90%" : 400} bgcolor="background.paper" border="2px solid #000" boxShadow={24} p={4} display="flex" flexDirection="column" gap={3} sx={{ transform: "translate(-50%,-50%)" }}>
             <Typography variant="h6">{editItem ? 'Edit Item' : 'Add Item'}</Typography>
