@@ -2,10 +2,9 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { firestore, storage } from "@/firebase";
-import { Box, Modal, Typography, Stack, TextField, Button, MenuItem, Select, InputLabel, FormControl, createTheme, ThemeProvider, CssBaseline } from "@mui/material";
+import { Box, Modal, Typography, Stack, TextField, Button, MenuItem, Select, InputLabel, FormControl, createTheme, ThemeProvider, CssBaseline, useMediaQuery } from "@mui/material";
 import { collection, deleteDoc, doc, getDocs, query, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
@@ -235,11 +234,25 @@ export default function Home() {
     },
   });
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box width="100vw" height="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="start" gap={2} paddingTop={2}>
-        <Box width="800px" position="fixed" top={0} bgcolor="background.default" zIndex={1} display="flex" flexDirection="column" alignItems="center" paddingTop={2} paddingBottom={2} borderBottom="1px solid #333">
+      <Box width="100vw" height="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="start" gap={2} paddingTop={isMobile ? 1 : 2}>
+        <Box
+          width={isMobile ? "100%" : "800px"}
+          position="fixed"
+          top={0}
+          bgcolor="background.default"
+          zIndex={1}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          paddingTop={isMobile ? 1 : 2}
+          paddingBottom={isMobile ? 1 : 2}
+          borderBottom="1px solid #333"
+        >
           <Box width="100%" display="flex" alignItems="center" justifyContent="center" padding={2}>
             <Typography variant="h2" color="#fff" sx={{ fontWeight: 'bold', letterSpacing: 2 }}>
               DormMate
@@ -267,11 +280,16 @@ export default function Home() {
             </FormControl>
           </Box>
         </Box>
-        <Box width="800px" marginTop="200px" overflow="auto" height="calc(100vh - 200px)" paddingTop="100px">
+        <Box
+          width={isMobile ? "100%" : "800px"}
+          marginTop={isMobile ? "270px" : "250px"}  // Adjust this margin to ensure the content is not hidden
+          overflow="auto"
+          height={isMobile ? "calc(100vh - 200px)" : "calc(100vh - 250px)"}
+        >
           <Stack spacing={2}>
             {filteredInventory.map(({ name, quantity, displayName, owners = [], price, imageUrl }) => (
-              <Box key={name} display="flex" alignItems="center" justifyContent="space-between" padding={2} borderBottom="1px solid #333">
-                <Box display="flex" flexDirection="column" flex="1">
+              <Box key={name} display="flex" flexDirection={isMobile ? "row" : "row"} alignItems="center" justifyContent="space-between" padding={2} borderBottom="1px solid #333">
+                <Box display="flex" flexDirection="column" flex="2">
                   <Typography variant="h5">
                     <span style={{ fontWeight: 'bold' }}>{displayName}</span>
                   </Typography>
@@ -282,8 +300,8 @@ export default function Home() {
                     <span style={{ fontWeight: 'bold' }}>Price:</span> ${price}
                   </Typography>
                 </Box>
-                <Box display="flex" alignItems="center" justifyContent="center" flex="1">
-                  {imageUrl && <img src={imageUrl} alt={name} style={{ width: '350px', height: '250px', objectFit: 'cover' }} />}
+                <Box display="flex" alignItems="center" justifyContent="flex-end" flex="1" marginLeft={isMobile ? 2 : 0}>
+                  {imageUrl && <img src={imageUrl} alt={name} style={{ width: isMobile ? '150px' : '350px', height: isMobile ? '100px' : '250px', objectFit: 'cover' }} />}
                 </Box>
                 <Box display="flex" gap={1} flex="1" justifyContent="flex-end">
                   <Button variant="outlined" onClick={() => editItemDetails({ name, displayName, owners, price, imageUrl })}>Edit</Button>
@@ -293,7 +311,7 @@ export default function Home() {
           </Stack>
         </Box>
         <Modal open={open} onClose={handleClose}>
-          <Box position="absolute" top="50%" left="50%" width={400} bgcolor="background.paper" border="2px solid #000" boxShadow={24} p={4} display="flex" flexDirection="column" gap={3} sx={{ transform: "translate(-50%,-50%)" }}>
+          <Box position="absolute" top="50%" left="50%" width={isMobile ? "90%" : 400} bgcolor="background.paper" border="2px solid #000" boxShadow={24} p={4} display="flex" flexDirection="column" gap={3} sx={{ transform: "translate(-50%,-50%)" }}>
             <Typography variant="h6">{editItem ? 'Edit Item' : 'Add Item'}</Typography>
             <Stack width="100%" direction="row" spacing={2}>
               <TextField variant="outlined" fullWidth label="Item Name" value={itemName} onChange={(e) => setItemName(e.target.value)} />
@@ -335,7 +353,7 @@ export default function Home() {
           </Box>
         </Modal>
         <Modal open={ownerModalOpen} onClose={handleOwnerModalClose}>
-          <Box position="absolute" top="50%" left="50%" width={400} bgcolor="background.paper" border="2px solid #000" boxShadow={24} p={4} display="flex" flexDirection="column" gap={3} sx={{ transform: "translate(-50%,-50%)" }}>
+          <Box position="absolute" top="50%" left="50%" width={isMobile ? "90%" : 400} bgcolor="background.paper" border="2px solid #000" boxShadow={24} p={4} display="flex" flexDirection="column" gap={3} sx={{ transform: "translate(-50%,-50%)" }}>
             <Typography variant="h6">Edit Owners</Typography>
             <Stack width="100%" direction="column" spacing={2}>
               {owners.map((owner) => (
